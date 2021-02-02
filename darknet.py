@@ -56,7 +56,7 @@ class DarkNet(nn.Module):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
 
-    def _make_layer(self, planes, blocks):
+    def _make_layer(self, planes, blocks):  # planes is an array '[64x128]'
         layers = []
         # Down Sampling, stride=2, filter_size=3
         layers.append(('ds_conv', nn.Conv2d(self.inplanes, planes[1], kernel_size=3, stride=2, padding=1, bias=False)))
