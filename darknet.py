@@ -58,11 +58,11 @@ class DarkNet(nn.Module):
 
     def _make_layer(self, planes, blocks):  # planes is an array '[64x128]'
         layers = []
-        # Down Sampling, stride=2, filter_size=3
+        # first Down Sampling, stride=2, filter_size=3
         layers.append(('ds_conv', nn.Conv2d(self.inplanes, planes[1], kernel_size=3, stride=2, padding=1, bias=False)))
         layers.append(('ds_bn', nn.BatchNorm2d(planes[1])))
         layers.append(('ds_relu', nn.LeakyReLU(0.1)))
-        # darknet
+        # then add residual blocks
         self.inplanes = planes[1]
         for i in range(0, blocks):
             layers.append('residual_{}'.format(i), BasicBlock(self.inplanes, planes))
