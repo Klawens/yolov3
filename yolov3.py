@@ -49,27 +49,27 @@ class YoloBody(nn.Module):
         self.last_layer1_upsample = nn.Upsample(scale_factor=2, mode='nearest')
         self.last_layer1 = make_last_layers([128, 256], out_filters[-3] + 128, final_out_filter2)
 
-        def forward(self, x):
-            def _branch(last_layer, layer_in):
-                for i, e in enumerate(last_layer):
-                    layer_in = e(layer_in)
-                    if i == 4:
-                        out_branch = layer_in
+    def forward(self, x):
+        def _branch(last_layer, layer_in):
+            for i, e in enumerate(last_layer):
+                layer_in = e(layer_in)
+                if i == 4:
+                    out_branch = layer_in
                 
-                return layer_in, out_branch
+            return layer_in, out_branch
             
-            x2, x1, x0 = self.backbone(x)
+        x2, x1, x0 = self.backbone(x)
 
-            out0, out0_branch = _branch(self.last_layer0, x0)
+        out0, out0_branch = _branch(self.last_layer0, x0)
 
-            x1_in = self.last_layer1_conv(out0_branch)
-            x1_in = self.last_layer1_upsample(x1_in)
-            x1_in = t.cat([x1_in, x1], 1)
-            out1, out1_branch = _branch(self.last_layer1, x1_in)
+        x1_in = self.last_layer1_conv(out0_branch)
+        x1_in = self.last_layer1_upsample(x1_in)
+        x1_in = t.cat([x1_in, x1], 1)
+        out1, out1_branch = _branch(self.last_layer1, x1_in)
 
-            x2_in = self.last_layer2_conv(out1_branch)
-            x2_in = self.last_layer2_upsample(x2_in)
-            x2_in = t.cat([x2_in, x2], 1)
-            out2, _ = _branch(self.last_layer2, x2_in)
-            return out0, out1, out2
+        x2_in = self.last_layer2_conv(out1_branch)
+        x2_in = self.last_layer2_upsample(x2_in)
+        x2_in = t.cat([x2_in, x2], 1)
+        out2, _ = _branch(self.last_layer2, x2_in)
+        return out0, out1, out2
             
